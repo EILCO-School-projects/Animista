@@ -1,4 +1,3 @@
-// import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 
 class AnimeDetailsPage extends StatelessWidget {

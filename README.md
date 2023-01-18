@@ -1,6 +1,6 @@
 # animista
 
-Browse through your favorite animes, and bookmarks whatever catches your eyes.
+Browse through your favorite animes, and bookmark whatever catches your eyes.
 
 ## Getting Started
 

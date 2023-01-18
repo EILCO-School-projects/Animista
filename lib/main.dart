@@ -1,4 +1,5 @@
 import 'package:animista/pages/anime_details_page.dart';
+import 'package:animista/pages/anime_overview_page.dart';
 import 'package:animista/pages/bookmarks_page.dart';
 import 'package:animista/pages/search_result_page.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   int _selectedIndex = 0;
   static const _pages = [
-    AnimeDetailsPage(),
+    AnimeOverviewPage(),
     SearchResultPage(),
     BookmarksPage()
   ];
@@ -34,18 +35,9 @@ class _AppState extends State<App> {
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Overview',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.bookmark),
-              label: 'Overview',
-            )
+            AnimeOverviewPage.navBarItem,
+            SearchResultPage.navBarItem,
+            BookmarksPage.navBarItem
           ],
           onTap: (index) => setState(() {
             _selectedIndex = index;
