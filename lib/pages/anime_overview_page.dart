@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:animista/models/seasonal_anime.model.dart';
 import 'package:animista/pages/anime_details_page.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +17,19 @@ class AnimeOverviewPage extends StatefulWidget {
 }
 
 class _AnimeOverviewPage extends State<AnimeOverviewPage> {
+  late List<SeasonalAnimeModel> animes;
+
+  @override
+  void initState() {
+    super.initState();
+    final data = json.decode(seasonalAnimesJsonExample) as List<dynamic>;
+    animes = data
+        .cast<Map<String, dynamic>>()
+        .where((element) => element['episodes'] != null)
+        .map((e) => SeasonalAnimeModel.fromJson(e))
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,19 +45,19 @@ class _AnimeOverviewPage extends State<AnimeOverviewPage> {
           ],
         ),
       ),
-      body: ListView(children: _generateCards(context)),
+      body: ListView(children: _generateSeasonalCards(context)),
     );
   }
 
-  List<Widget> _generateCards(context) {
+  List<Widget> _generateSeasonalCards(context) {
     List<Widget> cards = [];
-    for (int i = 0; i < 10; i++) {
-      cards.add(animeCard(context));
+    for (SeasonalAnimeModel anime in animes) {
+      cards.add(seasonalAnimeCard(context, anime));
     }
     return cards;
   }
 
-  Widget animeCard(context) {
+  Widget seasonalAnimeCard(context, SeasonalAnimeModel data) {
     return InkWell(
         onTap: () {
           AnimeDetailsPage.navigateTo(context);
@@ -59,7 +75,7 @@ class _AnimeOverviewPage extends State<AnimeOverviewPage> {
           }, children: [
             TableRow(children: [
               Image.network(
-                "https://cdn.myanimelist.net/images/anime/8/86304.jpg",
+                data.coverImage,
                 fit: BoxFit.cover,
               ),
               Padding(
@@ -70,10 +86,11 @@ class _AnimeOverviewPage extends State<AnimeOverviewPage> {
                         Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Flexible(
-                                  child: Text("Dimension W",
+                              Flexible(
+                                  child: Text(
+                                      data.title.second ?? data.title.first,
                                       textAlign: TextAlign.left,
-                                      style: TextStyle(fontSize: 20))),
+                                      style: const TextStyle(fontSize: 20))),
                               IconButton(
                                   //Todo: Book mark action
                                   onPressed: () {},
@@ -82,18 +99,19 @@ class _AnimeOverviewPage extends State<AnimeOverviewPage> {
                                     color: Colors.grey,
                                   ))
                             ]),
-                        const Padding(
-                            padding: EdgeInsets.only(top: 5, bottom: 5),
-                            child: Text("TV • Spring 2015",
+                        Padding(
+                            padding: const EdgeInsets.only(top: 5, bottom: 5),
+                            child: Text(
+                                "${data.format} • ${data.season} ${data.seasonYear}",
                                 textAlign: TextAlign.left,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 15, color: Colors.blueGrey))),
                         Padding(
                             padding: const EdgeInsets.only(top: 5),
                             child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
-                                children: const [
-                                  Tooltip(
+                                children: [
+                                  const Tooltip(
                                     message: "Favourites",
                                     child: Icon(
                                       Icons.favorite,
@@ -101,16 +119,16 @@ class _AnimeOverviewPage extends State<AnimeOverviewPage> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.only(left: 4),
-                                    child: Text('896'),
+                                    padding: const EdgeInsets.only(left: 4),
+                                    child: Text(data.favourites.toString()),
                                   ),
                                 ])),
                         Padding(
                             padding: const EdgeInsets.only(top: 5),
                             child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
-                                children: const [
-                                  Tooltip(
+                                children: [
+                                  const Tooltip(
                                     message: "Weighted Average Score",
                                     child: Icon(
                                       Icons.star_outlined,
@@ -118,17 +136,17 @@ class _AnimeOverviewPage extends State<AnimeOverviewPage> {
                                     ),
                                   ),
                                   Padding(
-                                    padding:
-                                        EdgeInsets.only(left: 4, right: 32),
-                                    child: Text('7.5'),
+                                    padding: const EdgeInsets.only(
+                                        left: 4, right: 32),
+                                    child: Text(data.averageScore.toString()),
                                   )
                                 ])),
                         Padding(
                             padding: const EdgeInsets.only(top: 5),
                             child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
-                                children: const [
-                                  Tooltip(
+                                children: [
+                                  const Tooltip(
                                     message: "Weighted Average Score",
                                     child: Icon(
                                       Icons.tv,
@@ -136,9 +154,9 @@ class _AnimeOverviewPage extends State<AnimeOverviewPage> {
                                     ),
                                   ),
                                   Padding(
-                                    padding:
-                                        EdgeInsets.only(left: 4, right: 32),
-                                    child: Text('24 episodes'),
+                                    padding: const EdgeInsets.only(
+                                        left: 4, right: 32),
+                                    child: Text(data.episodes.toString()),
                                   )
                                 ])),
                       ]))
