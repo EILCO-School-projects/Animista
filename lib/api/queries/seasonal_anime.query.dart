@@ -1,4 +1,4 @@
-const String getNowAiringSeasonAnime = r'''
+const String getSeasonalAnime = r'''
 query getSeasonalAnime(
     $page: Int,
     $perPage: Int,

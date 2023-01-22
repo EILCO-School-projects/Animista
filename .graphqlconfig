@@ -1,6 +1,6 @@
 {
   "name": "Anilist GraphQL Schema",
-  "schemaPath": "lib/api/anilist.graphql",
+  "schemaPath": "graphql/anilist.graphql",
   "extensions": {
     "endpoints": {
       "Default GraphQL Endpoint": {
