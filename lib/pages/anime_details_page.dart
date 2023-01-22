@@ -1,361 +1,407 @@
+import 'package:animista/api/graphql_service.dart';
+import 'package:animista/api/queries/anime_details.query.dart';
+import 'package:animista/models/anime_details.model.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:graphql/client.dart';
 
 class AnimeDetailsPage extends StatelessWidget {
+  final GraphQLService gqlService = GraphQLService();
   static const String routeName = '/details';
 
-  static void navigateTo(BuildContext context) {
-    Navigator.pushNamed(context, AnimeDetailsPage.routeName);
+  final String query = getAnimeDetails;
+
+  static void navigateTo(BuildContext context, int id) {
+    Navigator.pushNamed(context, AnimeDetailsPage.routeName, arguments: id);
   }
 
-  const AnimeDetailsPage({Key? key}) : super(key: key);
+  AnimeDetailsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final variables = {'id': ModalRoute.of(context)!.settings.arguments as int};
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Details"),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+        appBar: AppBar(
+          title: const Text("Details"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Table(
-            columnWidths: const {
-              0: FlexColumnWidth(45),
-              1: FlexColumnWidth(55),
-            },
-            children: [
-              TableRow(
-                children: [
-                  Image.network(
-                    "https://cdn.myanimelist.net/images/anime/8/86304.jpg",
-                    fit: BoxFit.cover,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        body: FutureBuilder(
+            future: gqlService.performQuery(query, variables: variables),
+            builder:
+                (BuildContext context, AsyncSnapshot<QueryResult> snapshot) {
+              if (snapshot.hasData) {
+                final data = AnimeDetailsModel.fromJson(
+                    (snapshot.data!.data?['Media'] as Map<String, dynamic>));
+
+                return ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    Table(
+                      columnWidths: const {
+                        0: FlexColumnWidth(45),
+                        1: FlexColumnWidth(55),
+                      },
                       children: [
-                        //Primary title
-                        const Text(
-                          "Dimension W",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        //Secondary title
-                        const Padding(
-                          padding: EdgeInsets.only(top: 4),
-                          child: Text(
-                            "(Dimension W)",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
+                        TableRow(
+                          children: [
+                            Image.network(
+                              data.coverImage,
+                              fit: BoxFit.cover,
                             ),
-                          ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  //Primary title
+                                  Text(
+                                    data.title.second ??
+                                        data.title.third ??
+                                        data.title.first ??
+                                        "",
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  //Secondary title
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      "(${data.title.first ?? ""})",
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  // Year's season
+                                  Padding(
+                                      padding: const EdgeInsets.only(top: 4),
+                                      child: Text(data.seasonYear.toString())),
+                                  // Format and episodes
+                                  Padding(
+                                      padding: const EdgeInsets.only(top: 4),
+                                      child: Text(
+                                          "${data.format} • ${data.episodes == 1 ? "1 episode" : "${data.episodes} episodes"}")),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 16),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        const Tooltip(
+                                          message: "Weighted Average Score",
+                                          child: Icon(
+                                            Icons.star_outlined,
+                                            color: Colors.orangeAccent,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 4, right: 32),
+                                          child: Text(
+                                              data.averageScore.toString()),
+                                        ),
+                                        const Tooltip(
+                                          message: "Favourites",
+                                          child: Icon(
+                                            Icons.favorite,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 4),
+                                          child:
+                                              Text(data.favourites.toString()),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 4, bottom: 25),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        const Tooltip(
+                                          message: "Popularity",
+                                          child: Icon(
+                                            Icons.people,
+                                          ),
+                                        ),
+                                        Padding(
+                                            padding:
+                                                const EdgeInsets.only(left: 4),
+                                            child: Text(
+                                                data.popularity.toString())),
+                                      ],
+                                    ),
+                                  ),
+                                  Center(
+                                      child: OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                        foregroundColor: Colors.blue,
+                                        side: const BorderSide(
+                                            color: Colors.blue)),
+                                    onPressed: () {},
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: const [
+                                        Icon(Icons.bookmark_add),
+                                        Padding(
+                                            padding: EdgeInsets.only(left: 10),
+                                            child: Text("Add to bookmarks")),
+                                      ],
+                                    ),
+                                  ))
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        // Year's season
-                        const Padding(
-                            padding: EdgeInsets.only(top: 4),
-                            child: Text("2023")),
-                        // Format and episodes
-                        const Padding(
-                            padding: EdgeInsets.only(top: 4),
-                            child: Text("TV • 24 episodes")),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: const [
-                              Tooltip(
-                                message: "Weighted Average Score",
-                                child: Icon(
-                                  Icons.star_outlined,
-                                  color: Colors.orangeAccent,
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 4, right: 32),
-                                child: Text(
-                                  '7.5',
-                                ),
-                              ),
-                              Tooltip(
-                                message: "Favourites",
-                                child: Icon(
-                                  Icons.favorite,
-                                  color: Colors.red,
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 4),
-                                child: Text('896'),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4, bottom: 25),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: const [
-                              Tooltip(
-                                message: "Popularity",
-                                child: Icon(
-                                  Icons.people,
-                                ),
-                              ),
-                              Padding(
-                                  padding: EdgeInsets.only(left: 4),
-                                  child: Text('1523')),
-                            ],
-                          ),
-                        ),
-                        Center(
-                            child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.blue,
-                              side: const BorderSide(color: Colors.blue)),
-                          onPressed: () {},
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              Icon(Icons.bookmark_add),
-                              Padding(
-                                  padding: EdgeInsets.only(left: 10),
-                                  child: Text("Add to bookmarks")),
-                            ],
-                          ),
-                        ))
                       ],
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          //Synopsis
-          Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: ExpandablePanel(
-              header: const Text(
-                "Synopsis",
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              collapsed: const Text(
-                "When Thorfinn loses it all, he must find his new purpose for living in a strange new land \n"
-                "When Thorfinn loses it all, he must find his new purpose for living in a strange new land",
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              expanded: const Text(
-                  "When Thorfinn loses it all, he must find his new purpose for living in a strange new land\n"
-                  "When Thorfinn loses it all, he must find his new purpose for living in a strange new land"),
-              theme: const ExpandableThemeData(
-                headerAlignment: ExpandablePanelHeaderAlignment.center,
-              ),
-            ),
-          ),
-          // Info section
-          const Padding(
-            padding: EdgeInsets.only(top: 32),
-            child: Text(
-              "Info",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: Table(
-              columnWidths: const {
-                0: FlexColumnWidth(30),
-                1: FlexColumnWidth(50),
-              },
-              children: [
-                const TableRow(
-                  children: [
-                    Text(
-                      'Romaji',
-                    ),
-                    Text(
-                      "Dimension W",
-                    ),
-                  ],
-                ),
-                const TableRow(
-                  children: [
+                    //Synopsis
                     Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        'English',
+                      padding: const EdgeInsets.only(top: 16),
+                      child: ExpandablePanel(
+                        header: const Text(
+                          "Synopsis",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        collapsed: Text(
+                          data.description,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        expanded: Html(data: data.description),
+                        theme: const ExpandableThemeData(
+                          headerAlignment:
+                              ExpandablePanelHeaderAlignment.center,
+                        ),
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text("Dimension W"),
-                    ),
-                  ],
-                ),
-                const TableRow(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text('Native'),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        "Dimension W",
-                      ),
-                    ),
-                  ],
-                ),
-                TableRow(
-                  children: [
+                    // Info section
                     const Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text('Genres'),
+                      padding: EdgeInsets.only(top: 32),
+                      child: Text(
+                        "Info",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text(
-                        ["Action", "Adventure", "Drama"].join(', '),
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Table(
+                        columnWidths: const {
+                          0: FlexColumnWidth(30),
+                          1: FlexColumnWidth(50),
+                        },
+                        children: [
+                          TableRow(
+                            children: [
+                              const Text(
+                                'Romaji',
+                                style: TextStyle(fontWeight: FontWeight.w500),
+                              ),
+                              Text(
+                                data.title.first ?? "",
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: Text(
+                                  'English',
+                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(data.title.second ?? ""),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: Text('Native',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w500)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  data.title.third ?? "",
+                                ),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: Text('Genres',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w500)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  data.genres.join(', '),
+                                ),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              const Padding(
+                                  padding: EdgeInsets.only(top: 8),
+                                  child: Text('Format',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500))),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(data.format),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: Text('Episodes',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w500)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  data.episodes.toString(),
+                                ),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: Text('Ep. Duration',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w500)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  data.duration == 1
+                                      ? "1 minute"
+                                      : "${data.duration} minutes",
+                                ),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              const Padding(
+                                  padding: EdgeInsets.only(top: 8),
+                                  child: Text('Source',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500))),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  data.source,
+                                ),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: Text('Status',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w500)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(data.status),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              const Padding(
+                                  padding: EdgeInsets.only(top: 8),
+                                  child: Text('Start Date',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500))),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  "${data.startDate.first}-${data.startDate.second}-${data.startDate.third}",
+                                ),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: Text('End Date',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w500)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text((data.endDate?.first != null &&
+                                        data.endDate?.second != null &&
+                                        data.endDate?.third != null)
+                                    ? "${data.endDate?.first}-${data.endDate?.second}-${data.endDate?.third}"
+                                    : "-"),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: Text('Season',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w500)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  data.season,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ],
-                ),
-                const TableRow(
-                  children: [
-                    Padding(
-                        padding: EdgeInsets.only(top: 8),
-                        child: Text('Format')),
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text('TV'),
-                    ),
-                  ],
-                ),
-                const TableRow(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        'Episodes',
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        '24',
-                      ),
-                    ),
-                  ],
-                ),
-                const TableRow(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        'Ep. Duration',
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        '25 minutes',
-                      ),
-                    ),
-                  ],
-                ),
-                const TableRow(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text('Source'),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        "Manga",
-                      ),
-                    ),
-                  ],
-                ),
-                const TableRow(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        'Status',
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text("Released"),
-                    ),
-                  ],
-                ),
-                const TableRow(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text('Start Date'),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        "06-22-2015",
-                      ),
-                    ),
-                  ],
-                ),
-                const TableRow(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        'End Date',
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        "03-29-2016",
-                      ),
-                    ),
-                  ],
-                ),
-                const TableRow(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        'Season',
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        'Summer',
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+                );
+              } else if (snapshot.hasError) {
+                return Center(child: Text("${snapshot.error}"));
+              }
+              return const Center(child: CircularProgressIndicator());
+            }));
   }
 }

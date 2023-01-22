@@ -1,6 +1,7 @@
 import 'package:animista/utils/tuple.dart';
 
 class SeasonalAnimeModel {
+  final int id;
   final Trio<String?, String?, String?> title;
   final String coverImage;
   final String format;
@@ -11,7 +12,8 @@ class SeasonalAnimeModel {
   final int episodes;
 
   SeasonalAnimeModel(
-      {required this.title,
+      {required this.id,
+      required this.title,
       required this.coverImage,
       required this.format,
       required this.season,
@@ -22,6 +24,7 @@ class SeasonalAnimeModel {
 
   factory SeasonalAnimeModel.fromJson(Map<String, dynamic> json) =>
       SeasonalAnimeModel(
+          id: json['id'],
           title: Trio<String?, String?, String?>(
               json['title']['romaji'] as String?,
               json['title']['english'] as String?,

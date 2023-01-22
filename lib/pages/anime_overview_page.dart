@@ -18,7 +18,6 @@ class AnimeOverviewPage extends StatefulWidget {
 }
 
 class _AnimeOverviewPage extends State<AnimeOverviewPage> {
-  late List<SeasonalAnimeModel> animes;
   GraphQLService gqlService = GraphQLService();
   final String query = getSeasonalAnime;
 

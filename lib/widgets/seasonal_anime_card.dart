@@ -11,7 +11,7 @@ class SeasonalAnimeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
         onTap: () {
-          AnimeDetailsPage.navigateTo(context);
+          AnimeDetailsPage.navigateTo(context, data.id);
         },
         child: Container(
           padding: const EdgeInsets.all(16),

@@ -19,6 +19,7 @@ query getSeasonalAnime(
             sort: $sort,
             format_in: $format_in
         ) {
+            id
             title {
                 english
             }

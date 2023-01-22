@@ -48,7 +48,7 @@ class _AppState extends State<App> {
           type: BottomNavigationBarType.fixed,
         ),
       ),
-      routes: {AnimeDetailsPage.routeName: (_) => const AnimeDetailsPage()},
+      routes: {AnimeDetailsPage.routeName: (_) => AnimeDetailsPage()},
     );
   }
 }
