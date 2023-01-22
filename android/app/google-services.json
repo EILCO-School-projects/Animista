@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "818401911800",
+    "project_id": "animista-app",
+    "storage_bucket": "animista-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:818401911800:android:1c0a35ecea85927cb7ec0d",
+        "android_client_info": {
+          "package_name": "fr.eilco.animista"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "818401911800-5973ssfuke47jfcpk7vepsv2rck8oo29.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fr.eilco.animista",
+            "certificate_hash": "00fa6d4799015eadc47bfe98bfab0976c9896ff1"
+          }
+        },
+        {
+          "client_id": "818401911800-9p124u3cil4cpre7k8dcta8ok1q59v5k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMPfLnMA_cz6XiIQBV5Zfe5wsNW77Y4qc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "818401911800-9p124u3cil4cpre7k8dcta8ok1q59v5k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

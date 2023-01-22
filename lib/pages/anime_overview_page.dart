@@ -1,5 +1,5 @@
-import 'package:animista/api/graphql_service.dart';
 import 'package:animista/api/queries/seasonal_anime.query.dart';
+import 'package:animista/api/services/graphql_service.dart';
 import 'package:animista/models/seasonal_anime.model.dart';
 import 'package:animista/widgets/seasonal_anime_card.dart';
 import 'package:flutter/material.dart';

@@ -1,5 +1,5 @@
-import 'package:animista/api/graphql_service.dart';
 import 'package:animista/api/queries/anime_details.query.dart';
+import 'package:animista/api/services/graphql_service.dart';
 import 'package:animista/models/anime_details.model.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';

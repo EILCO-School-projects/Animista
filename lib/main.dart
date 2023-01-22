@@ -1,54 +1,33 @@
+import 'package:animista/config/firebase_options.dart';
 import 'package:animista/pages/anime_details_page.dart';
-import 'package:animista/pages/anime_overview_page.dart';
-import 'package:animista/pages/bookmarks_page.dart';
-import 'package:animista/pages/search_result_page.dart';
+import 'package:animista/pages/home_page.dart';
+import 'package:animista/pages/login_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+Future<void> main() async {
+  //Ensure Bindings init
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const App());
 }
 
-class App extends StatefulWidget {
+class App extends StatelessWidget {
   const App({Key? key}) : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() => _AppState();
-}
-
-class _AppState extends State<App> {
-  int _selectedIndex = 0;
-  static const _pages = [
-    AnimeOverviewPage(),
-    SearchResultPage(),
-    BookmarksPage()
-  ];
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      initialRoute: HomePage.routeName,
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: _pages,
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          items: const <BottomNavigationBarItem>[
-            AnimeOverviewPage.navBarItem,
-            SearchResultPage.navBarItem,
-            BookmarksPage.navBarItem
-          ],
-          onTap: (index) => setState(() {
-            _selectedIndex = index;
-          }),
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          iconSize: 30,
-          type: BottomNavigationBarType.fixed,
-        ),
-      ),
-      routes: {AnimeDetailsPage.routeName: (_) => AnimeDetailsPage()},
+      theme: ThemeData(primarySwatch: Colors.purple),
+      routes: {
+        LoginPage.routeName: (_) => const LoginPage(),
+        HomePage.routeName: (_) => const HomePage(),
+        AnimeDetailsPage.routeName: (_) => AnimeDetailsPage()
+      },
     );
   }
 }
