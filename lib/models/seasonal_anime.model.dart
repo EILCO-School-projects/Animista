@@ -30,13 +30,13 @@ class SeasonalAnimeModel {
               json['title']['english'] as String?,
               json['title']['native'] as String?),
           coverImage: json['coverImage']['extraLarge'] as String,
-          format: json['format'] as String,
-          season: json['season'] as String,
-          seasonYear: json['seasonYear'] as int,
-          favourites: json['favourites'] as int,
+          format: (json['format'] as String?) ?? "",
+          season: (json['season'] as String?) ?? "",
+          seasonYear: (json['seasonYear'] as int?) ?? 0,
+          favourites: (json['favourites'] as int?) ?? 0,
           //Averages are normally scored as percentages, so we convert them to 1-10 scale
-          averageScore: (json['averageScore'] / 10) as double,
-          episodes: json['episodes'] as int);
+          averageScore: ((json['averageScore'] ?? 0) / 10) as double,
+          episodes: (json['episodes'] as int?) ?? 0);
 }
 
 const seasonalAnimesJsonExample = r'''
