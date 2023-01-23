@@ -1,10 +1,13 @@
+import 'package:animista/api/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
 class LoginPage extends StatelessWidget {
   static const String routeName = '/login';
 
-  const LoginPage({Key? key}) : super(key: key);
+  final authService = AuthService();
+
+  LoginPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +42,9 @@ class LoginPage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(30.0),
                                 ),
                                 text: "Continue with Google",
-                                onPressed: () {}))),
+                                onPressed: () async {
+                              await authService.signInWithGoogle();
+                            }))),
                   ])),
         ],
       ),

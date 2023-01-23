@@ -2,6 +2,7 @@
   "project_info": {
     "project_number": "818401911800",
     "project_id": "animista-app",
+    "firebase_url": "https://animista-app-default-rtdb.europe-west1.firebasedatabase.app",
     "storage_bucket": "animista-app.appspot.com"
   },
   "client": [

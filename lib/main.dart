@@ -1,4 +1,5 @@
 import 'package:animista/config/firebase_options.dart';
+import 'package:animista/guards/login_guard.dart';
 import 'package:animista/pages/anime_details_page.dart';
 import 'package:animista/pages/home_page.dart';
 import 'package:animista/pages/login_page.dart';
@@ -20,11 +21,12 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: HomePage.routeName,
+      initialRoute: LoginGuard.routeName,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.purple),
       routes: {
-        LoginPage.routeName: (_) => const LoginPage(),
+        LoginGuard.routeName: (_) => LoginGuard(),
+        LoginPage.routeName: (_) => LoginPage(),
         HomePage.routeName: (_) => const HomePage(),
         AnimeDetailsPage.routeName: (_) => AnimeDetailsPage()
       },
