@@ -8,7 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final String reference = 'users';
-  final DatabaseService dbService = DatabaseService();
+  final DatabaseService dbService = GetIt.I<DatabaseService>();
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: <String>['email'],
   );
@@ -71,5 +71,5 @@ class AuthService {
     return null;
   }
 
-  Future<void> signOut() => _googleSignIn.disconnect();
+  Future<void> signOut() async => await FirebaseAuth.instance.signOut();
 }

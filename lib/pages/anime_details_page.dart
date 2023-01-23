@@ -4,10 +4,11 @@ import 'package:animista/models/anime_details.model.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:get_it/get_it.dart';
 import 'package:graphql/client.dart';
 
 class AnimeDetailsPage extends StatelessWidget {
-  final GraphQLService gqlService = GraphQLService();
+  final GraphQLService gqlService = GetIt.I<GraphQLService>();
   static const String routeName = '/details';
 
   final String query = getAnimeDetails;

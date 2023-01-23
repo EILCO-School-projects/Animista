@@ -6,6 +6,7 @@ import 'package:animista/api/services/graphql_service.dart';
 import 'package:animista/models/seasonal_anime.model.dart';
 import 'package:animista/widgets/seasonal_anime_card.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:graphql/client.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -24,7 +25,7 @@ class SearchResultPage extends StatefulWidget {
 class _SearchResultPageState extends State<SearchResultPage> {
   final searchInputController = TextEditingController();
   final searchStreamController = StreamController<String>.broadcast();
-  GraphQLService gqlService = GraphQLService();
+  GraphQLService gqlService = GetIt.I<GraphQLService>();
   final String query = searchAnime;
 
   @override

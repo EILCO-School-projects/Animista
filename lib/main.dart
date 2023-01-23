@@ -1,3 +1,4 @@
+import 'package:animista/config/dependencies.dart';
 import 'package:animista/config/firebase_options.dart';
 import 'package:animista/guards/login_guard.dart';
 import 'package:animista/pages/anime_details_page.dart';
@@ -12,6 +13,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  initializeDependencies();
   runApp(const App());
 }
 

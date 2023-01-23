@@ -1,9 +1,11 @@
+import 'package:animista/api/services/auth_service.dart';
 import 'package:animista/models/user.model.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 class ProfileDrawer extends StatelessWidget {
   final AppUser user = GetIt.I<AppUser>();
+  final AuthService authService = GetIt.I<AuthService>();
 
   ProfileDrawer({Key? key}) : super(key: key);
 
@@ -57,6 +59,7 @@ class ProfileDrawer extends StatelessWidget {
                           TextButton(
                             child: const Text("Yes"),
                             onPressed: () {
+                              authService.signOut();
                               Navigator.of(context).pop();
                             },
                           ),

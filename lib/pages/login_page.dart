@@ -1,11 +1,12 @@
 import 'package:animista/api/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
 class LoginPage extends StatelessWidget {
   static const String routeName = '/login';
 
-  final authService = AuthService();
+  final authService = GetIt.I<AuthService>();
 
   LoginPage({Key? key}) : super(key: key);
 

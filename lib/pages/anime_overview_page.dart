@@ -4,6 +4,7 @@ import 'package:animista/models/seasonal_anime.model.dart';
 import 'package:animista/widgets/profile_drawer.dart';
 import 'package:animista/widgets/seasonal_anime_card.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:graphql/client.dart';
 
 class AnimeOverviewPage extends StatefulWidget {
@@ -19,7 +20,7 @@ class AnimeOverviewPage extends StatefulWidget {
 }
 
 class _AnimeOverviewPage extends State<AnimeOverviewPage> {
-  GraphQLService gqlService = GraphQLService();
+  GraphQLService gqlService = GetIt.I<GraphQLService>();
   final String query = getSeasonalAnime;
 
   //Todo : Get season and seasonYear dynamically

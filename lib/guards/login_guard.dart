@@ -3,10 +3,11 @@ import 'package:animista/models/user.model.dart';
 import 'package:animista/pages/home_page.dart';
 import 'package:animista/pages/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class LoginGuard extends StatelessWidget {
   static const String routeName = '/';
-  final authService = AuthService();
+  final authService = GetIt.I<AuthService>();
 
   LoginGuard({Key? key}) : super(key: key);
 
