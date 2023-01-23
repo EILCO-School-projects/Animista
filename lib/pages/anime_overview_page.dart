@@ -1,6 +1,7 @@
 import 'package:animista/api/queries/seasonal_anime.query.dart';
 import 'package:animista/api/services/graphql_service.dart';
 import 'package:animista/models/seasonal_anime.model.dart';
+import 'package:animista/models/user.model.dart';
 import 'package:animista/widgets/profile_drawer.dart';
 import 'package:animista/widgets/seasonal_anime_card.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ class AnimeOverviewPage extends StatefulWidget {
 }
 
 class _AnimeOverviewPage extends State<AnimeOverviewPage> {
+  final user = GetIt.I<AppUser>();
   GraphQLService gqlService = GetIt.I<GraphQLService>();
   final String query = getSeasonalAnime;
 
@@ -60,8 +62,13 @@ class _AnimeOverviewPage extends State<AnimeOverviewPage> {
                     (snapshot.data!.data?['Page']['media'] as List<dynamic>)
                         .cast<Map<String, dynamic>>()
                         .where((element) => element['episodes'] != null)
-                        .map((e) => SeasonalAnimeModel.fromJson(e))
-                        .toList();
+                        .map((e) {
+                  SeasonalAnimeModel anime = SeasonalAnimeModel.fromJson(e);
+                  if (user.bookmarks!.contains(anime.id)) {
+                    anime.isBookmarked = true;
+                  }
+                  return anime;
+                }).toList();
 
                 return ListView.builder(
                     itemCount: animes.length,

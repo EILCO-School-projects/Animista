@@ -15,4 +15,8 @@ class DatabaseService {
       {required Map<String, dynamic> data}) async {
     await _client.ref(reference).set(data);
   }
+
+  void update(String reference, {required Map<String, dynamic> data}) async {
+    await _client.ref(reference).update(data);
+  }
 }

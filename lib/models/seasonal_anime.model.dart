@@ -10,6 +10,7 @@ class SeasonalAnimeModel {
   final int favourites;
   final double averageScore;
   final int episodes;
+  bool isBookmarked = false;
 
   SeasonalAnimeModel(
       {required this.id,
@@ -20,7 +21,8 @@ class SeasonalAnimeModel {
       required this.seasonYear,
       required this.favourites,
       required this.averageScore,
-      required this.episodes});
+      required this.episodes,
+      required this.isBookmarked});
 
   factory SeasonalAnimeModel.fromJson(Map<String, dynamic> json) =>
       SeasonalAnimeModel(
@@ -36,7 +38,8 @@ class SeasonalAnimeModel {
           favourites: (json['favourites'] as int?) ?? 0,
           //Averages are normally scored as percentages, so we convert them to 1-10 scale
           averageScore: ((json['averageScore'] ?? 0) / 10) as double,
-          episodes: (json['episodes'] as int?) ?? 0);
+          episodes: (json['episodes'] as int?) ?? 0,
+          isBookmarked: false);
 }
 
 const seasonalAnimesJsonExample = r'''

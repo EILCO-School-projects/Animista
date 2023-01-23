@@ -7,21 +7,42 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:get_it/get_it.dart';
 import 'package:graphql/client.dart';
 
-class AnimeDetailsPage extends StatelessWidget {
-  final GraphQLService gqlService = GetIt.I<GraphQLService>();
-  static const String routeName = '/details';
+import '../api/services/database_service.dart';
+import '../models/user.model.dart';
+import '../utils/firebase.dart';
 
-  final String query = getAnimeDetails;
+class AnimeDetailsPage extends StatefulWidget {
+  static const String routeName = '/details';
 
   static void navigateTo(BuildContext context, int id) {
     Navigator.pushNamed(context, AnimeDetailsPage.routeName, arguments: id);
   }
 
-  AnimeDetailsPage({Key? key}) : super(key: key);
+  const AnimeDetailsPage({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _AnimeDetailsPageState();
+}
+
+class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
+  final GraphQLService gqlService = GetIt.I<GraphQLService>();
+  final dbService = GetIt.I<DatabaseService>();
+  final user = GetIt.I<AppUser>();
+  final String query = getAnimeDetails;
+
+  late bool isBookmarked;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //
+  // }
 
   @override
   Widget build(BuildContext context) {
     final variables = {'id': ModalRoute.of(context)!.settings.arguments as int};
+    isBookmarked = user.bookmarks!
+        .contains(ModalRoute.of(context)!.settings.arguments as int);
     return Scaffold(
         appBar: AppBar(
           title: const Text("Details"),
@@ -38,6 +59,9 @@ class AnimeDetailsPage extends StatelessWidget {
               if (snapshot.hasData) {
                 final data = AnimeDetailsModel.fromJson(
                     (snapshot.data!.data?['Media'] as Map<String, dynamic>));
+                if (user.bookmarks!.contains(data.id)) {
+                  data.isBookmarked = true;
+                }
 
                 return ListView(
                   padding: const EdgeInsets.all(16),
@@ -148,17 +172,53 @@ class AnimeDetailsPage extends StatelessWidget {
                                   Center(
                                       child: OutlinedButton(
                                     style: OutlinedButton.styleFrom(
-                                        foregroundColor: Colors.blue,
+                                        foregroundColor: isBookmarked
+                                            ? Colors.white
+                                            : Colors.purple,
+                                        backgroundColor: isBookmarked
+                                            ? Colors.purple
+                                            : Colors.white,
                                         side: const BorderSide(
-                                            color: Colors.blue)),
-                                    onPressed: () {},
+                                            color: Colors.purple)),
+                                    onPressed: () async {
+                                      final reference =
+                                          "users/${escapeEmail(user.email)}";
+                                      final dbUser =
+                                          await dbService.read(reference);
+                                      if (dbUser != null) {
+                                        List<int> bookmarks = List<int>.from(
+                                            AppUser.fromJson(dbUser
+                                                    as Map<Object?, dynamic>)
+                                                .bookmarks as List<int>);
+
+                                        if (!isBookmarked) {
+                                          bookmarks = bookmarks
+                                              .where((element) => element != 0)
+                                              .toList();
+                                          bookmarks.add(data.id);
+                                        } else {
+                                          bookmarks = bookmarks
+                                              .where((e) => e != data.id)
+                                              .toList();
+                                        }
+                                        user.bookmarks = bookmarks;
+                                        dbService.update(reference, data: {
+                                          'bookmarks': user.bookmarks
+                                        });
+                                      }
+                                      setState(() {
+                                        isBookmarked = !isBookmarked;
+                                      });
+                                    },
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       mainAxisSize: MainAxisSize.min,
-                                      children: const [
-                                        Icon(Icons.bookmark_add),
-                                        Padding(
+                                      children: [
+                                        Icon(isBookmarked
+                                            ? Icons.bookmark_added
+                                            : Icons.bookmark_add),
+                                        const Padding(
                                             padding: EdgeInsets.only(left: 10),
                                             child: Text("Add to bookmarks")),
                                       ],

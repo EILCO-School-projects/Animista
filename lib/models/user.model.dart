@@ -2,7 +2,7 @@ class AppUser {
   final String displayName;
   final String email;
   final String photoUrl;
-  final List<int>? bookmarks;
+  List<int>? bookmarks;
 
   AppUser(
       {required this.displayName,
