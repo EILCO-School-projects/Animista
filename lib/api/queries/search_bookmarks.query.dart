@@ -1,0 +1,30 @@
+const String getBookmarkedAnime = r'''
+query getBookmarkedAnime(
+    $id_in: [Int],
+    $page: Int,
+    $perPage: Int,
+) {
+    Page(
+        page: $page,
+        perPage: $perPage
+    ) {
+        media(
+            id_in: $id_in
+        ) {
+            id
+            title {
+                english
+            }
+            coverImage {
+                extraLarge
+            }
+            format
+            season
+            seasonYear
+            favourites
+            averageScore
+            episodes
+        }
+    }
+}
+''';

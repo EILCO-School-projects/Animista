@@ -200,6 +200,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                           bookmarks = bookmarks
                                               .where((e) => e != data.id)
                                               .toList();
+                                          if (bookmarks.isEmpty) {
+                                            bookmarks.add(0);
+                                          }
                                         }
                                         user.bookmarks = bookmarks;
                                         dbService.update(reference, data: {

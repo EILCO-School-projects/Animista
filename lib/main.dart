@@ -30,7 +30,7 @@ class App extends StatelessWidget {
         LoginGuard.routeName: (_) => LoginGuard(),
         LoginPage.routeName: (_) => LoginPage(),
         HomePage.routeName: (_) => const HomePage(),
-        AnimeDetailsPage.routeName: (_) => AnimeDetailsPage()
+        AnimeDetailsPage.routeName: (_) => const AnimeDetailsPage()
       },
     );
   }

@@ -23,11 +23,11 @@ class _SeasonalAnimeCard extends State<SeasonalAnimeCard> {
   @override
   void initState() {
     super.initState();
-    isBookmarked = widget.data.isBookmarked;
   }
 
   @override
   Widget build(BuildContext context) {
+    isBookmarked = widget.data.isBookmarked;
     return InkWell(
         onTap: () {
           AnimeDetailsPage.navigateTo(context, widget.data.id);
@@ -40,8 +40,8 @@ class _SeasonalAnimeCard extends State<SeasonalAnimeCard> {
             ),
           ),
           child: Table(columnWidths: const {
-            0: FlexColumnWidth(35),
-            1: FlexColumnWidth(65)
+            0: FlexColumnWidth(45),
+            1: FlexColumnWidth(55)
           }, children: [
             TableRow(children: [
               Image.network(
@@ -85,6 +85,9 @@ class _SeasonalAnimeCard extends State<SeasonalAnimeCard> {
                                         bookmarks = bookmarks
                                             .where((e) => e != widget.data.id)
                                             .toList();
+                                        if (bookmarks.isEmpty) {
+                                          bookmarks.add(0);
+                                        }
                                       }
                                       user.bookmarks = bookmarks;
                                       dbService.update(reference,

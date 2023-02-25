@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:graphql/client.dart';
 
+import '../api/services/database_service.dart';
+import '../utils/firebase.dart';
+
 class AnimeOverviewPage extends StatefulWidget {
   const AnimeOverviewPage({Key? key}) : super(key: key);
 
@@ -23,10 +26,11 @@ class AnimeOverviewPage extends StatefulWidget {
 class _AnimeOverviewPage extends State<AnimeOverviewPage> {
   final user = GetIt.I<AppUser>();
   GraphQLService gqlService = GetIt.I<GraphQLService>();
+  DatabaseService dbService = GetIt.I<DatabaseService>();
   final String query = getSeasonalAnime;
 
   //Todo : Get season and seasonYear dynamically
-  final variables = {
+  late final variables = {
     'page': 1,
     'perPage': 20,
     'season': 'FALL',
@@ -53,32 +57,46 @@ class _AnimeOverviewPage extends State<AnimeOverviewPage> {
           ),
         ),
         drawer: ProfileDrawer(),
-        body: FutureBuilder(
-            future: gqlService.performQuery(query, variables: variables),
-            builder:
-                (BuildContext context, AsyncSnapshot<QueryResult> snapshot) {
-              if (snapshot.hasData) {
-                final animes =
-                    (snapshot.data!.data?['Page']['media'] as List<dynamic>)
-                        .cast<Map<String, dynamic>>()
-                        .where((element) => element['episodes'] != null)
-                        .map((e) {
-                  SeasonalAnimeModel anime = SeasonalAnimeModel.fromJson(e);
-                  if (user.bookmarks!.contains(anime.id)) {
-                    anime.isBookmarked = true;
-                  }
-                  return anime;
-                }).toList();
+        body: StreamBuilder(
+          stream: dbService.listen("users/${escapeEmail(user.email)}"),
+          builder: (BuildContext context, snapshot) {
+            if (snapshot.hasData) {
+              final live_user =
+                  AppUser.fromJson(snapshot.data as Map<Object?, dynamic>);
 
-                return ListView.builder(
-                    itemCount: animes.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return SeasonalAnimeCard(data: animes[index]);
-                    });
-              } else if (snapshot.hasError) {
-                return Center(child: Text("${snapshot.error}"));
-              }
-              return const Center(child: CircularProgressIndicator());
-            }));
+              return FutureBuilder(
+                  future: gqlService.performQuery(query, variables: variables),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QueryResult> snapshot) {
+                    if (snapshot.hasData) {
+                      final animes = (snapshot.data!.data?['Page']['media']
+                              as List<dynamic>)
+                          .cast<Map<String, dynamic>>()
+                          .where((element) => element['episodes'] != null)
+                          .map((e) {
+                        SeasonalAnimeModel anime =
+                            SeasonalAnimeModel.fromJson(e);
+                        if (live_user.bookmarks!.contains(anime.id)) {
+                          anime.isBookmarked = true;
+                        }
+                        return anime;
+                      }).toList();
+
+                      return ListView.builder(
+                          itemCount: animes.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return SeasonalAnimeCard(data: animes[index]);
+                          });
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text("${snapshot.error}"));
+                    }
+                    return const Center(child: CircularProgressIndicator());
+                  });
+            } else if (snapshot.hasError) {
+              return Center(child: Text("${snapshot.error}"));
+            }
+            return const Center(child: CircularProgressIndicator());
+          },
+        ));
   }
 }

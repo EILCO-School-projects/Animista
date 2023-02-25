@@ -11,6 +11,16 @@ class DatabaseService {
     return null;
   }
 
+  Stream<dynamic> listen(String reference) {
+    return _client.ref(reference).onValue.distinct().map((DatabaseEvent event) {
+      if (event.snapshot.exists) {
+        return event.snapshot.value;
+      } else {
+        return null;
+      }
+    });
+  }
+
   Future<void> create(String reference,
       {required Map<String, dynamic> data}) async {
     await _client.ref(reference).set(data);

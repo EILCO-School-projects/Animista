@@ -14,10 +14,10 @@ class HomePage extends StatefulWidget {
 
 class _HomeState extends State<HomePage> {
   int _selectedIndex = 0;
-  static const _pages = [
-    AnimeOverviewPage(),
-    SearchResultPage(),
-    BookmarksPage()
+  List<Widget> _pages = [
+    const AnimeOverviewPage(),
+    const SearchResultPage(),
+    const BookmarksPage()
   ];
 
   @override
@@ -34,9 +34,11 @@ class _HomeState extends State<HomePage> {
           SearchResultPage.navBarItem,
           BookmarksPage.navBarItem
         ],
-        onTap: (index) => setState(() {
-          _selectedIndex = index;
-        }),
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
         showSelectedLabels: false,
         showUnselectedLabels: false,
         iconSize: 30,
